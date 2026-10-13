@@ -1,9 +1,9 @@
 // Firebase console > Project settings > Your apps > Web app se yeh values copy karke yahan paste karein.
 const FIREBASE_CONFIG = {
-  apiKey: "PASTE_HERE",
-  authDomain: "PASTE_HERE",
-  projectId: "PASTE_HERE",
-  storageBucket: "PASTE_HERE",
-  messagingSenderId: "PASTE_HERE",
-  appId: "PASTE_HERE"
+  apiKey: "AIzaSyDce4TZNcqLQV8i7eGYWZOXkHfoj3OHbhI",
+  authDomain: "bf-brother.firebaseapp.com",
+  projectId: "bf-brother",
+  storageBucket: "bf-brother.firebasestorage.app",
+  messagingSenderId: "33699309599",
+  appId: "1:33699309599:web:d5b79ce0fb15730e1b4d2a"
 };
