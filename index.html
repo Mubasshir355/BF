@@ -1,0 +1,142 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BF Brother and Exide - Attendance</title>
+<style>
+:root{--bg:#0e1a2b;--card:#17263c;--ln:#2a3d58;--tx:#eef2f8;--mu:#9db0c9;--red:#e2231a;--ok:#2fbf71;--hd:#0a1422;--in:#0e1a2b;--g1:#1d3558}
+[data-theme=light]{--bg:#f1f5fa;--card:#fff;--ln:#d3dbe8;--tx:#14202f;--mu:#586a84;--hd:#fff;--in:#f6f8fc;--g1:#dfe9f7}
+.stk{max-width:520px}.stk .card label,#login label{margin-bottom:10px}.stk input{width:100%}.btn.d{background:#b00d06;box-shadow:0 4px 0 #6d0804}
+*{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:radial-gradient(circle at 80% -10%,var(--g1),var(--bg) 60%);color:var(--tx);min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 24px;border-bottom:3px solid var(--red);background:var(--hd);flex-wrap:wrap}
+header h1{margin:0;font-size:1.6rem;letter-spacing:.5px}header p{margin:2px 0 0;color:var(--mu);font-size:.9rem}
+#bat{width:200px;height:120px}
+nav{display:flex;gap:8px;padding:14px 24px 0;flex-wrap:wrap}
+nav button{background:var(--card);color:var(--mu);border:1px solid var(--ln);padding:10px 20px;border-radius:10px 10px 0 0;cursor:pointer;font-size:1rem}
+nav button.on{background:var(--red);color:#fff;border-color:var(--red)}
+main{padding:0 24px 40px;perspective:1200px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:18px;margin-top:16px;box-shadow:0 18px 40px rgba(0,0,0,.45);transition:transform .15s ease-out;transform-style:preserve-3d}
+.tab{display:none}.tab.on{display:block}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+label{display:flex;flex-direction:column;font-size:.85rem;color:var(--mu);gap:4px}
+input,select{background:var(--in);color:var(--tx);border:1px solid var(--ln);border-radius:8px;padding:9px 10px;font-size:1rem;min-width:140px}
+.btn{background:var(--red);color:#fff;border:0;border-radius:8px;padding:10px 18px;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #8f130d;transition:transform .1s,box-shadow .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #8f130d}.btn.g{background:#2b4468;box-shadow:0 4px 0 #1a2c46}.btn.s{padding:5px 10px;font-size:.85rem;box-shadow:none}
+.btn.ok{background:var(--ok);box-shadow:0 4px 0 #1c7d49}
+table{width:100%;border-collapse:collapse;margin-top:12px}th,td{padding:9px 8px;border-bottom:1px solid var(--ln);text-align:left;font-size:.95rem}
+th{background:var(--in);color:var(--mu)}.wrap{overflow-x:auto}
+h2{margin:0 0 12px;font-size:1.15rem}.sum{margin-top:14px;color:var(--mu)}.sum b{color:var(--tx)}
+#ptitle{display:none}#login{position:fixed;inset:0;background:var(--in);z-index:9;display:flex;align-items:center;justify-content:center}
+@media print{body{background:#fff;color:#000}header,nav,.noprint,.card:not(#rcard){display:none!important}#rcard{box-shadow:none;border:0;background:#fff;color:#000;transform:none!important}
+th,td{color:#000;border-color:#999}th{background:#eee}#ptitle{display:block}.tab{display:none!important}#t3{display:block!important}}
+</style></head><body>
+<div id="login"><div class="card" style="width:min(380px,92vw)"><h2>BF Brother and Exide</h2>
+<div class="row" style="margin-bottom:12px"><button class="btn s g" data-m="in">Login</button><button class="btn s g" data-m="up">Sign up</button><button class="btn s g" data-m="fg">Forgot password</button><button class="btn s g thm">Light / Dark</button></div>
+<label id="gN" style="display:none">Your name<input id="lNm"></label><label>Email<input id="lEm" type="email"></label><label id="gP">Password<input id="lPw" type="password"></label>
+<button class="btn" id="lgo">Login</button><div id="lErr" style="margin-top:10px"></div></div></div>
+<header><div><h1>BF Brother and Exide</h1><p>Employee Time In / Time Out Management</p></div><canvas id="bat" width="400" height="240"></canvas><div class="row noprint" style="align-items:center"><span id="uName" class="sum" style="margin:0"></span><button class="btn g s thm">Light / Dark</button><button class="btn g s" id="out" style="display:none">Sign out</button></div></header>
+<nav><button class="on" data-t="t1">Attendance</button><button data-t="t2">Employees</button><button data-t="t3">Reports</button><button data-t="t4">Settings</button></nav>
+<main>
+<section id="t1" class="tab on"><div class="card"><h2 id="ftitle">Add time in / time out</h2>
+<div class="row"><label>Employee<select id="aEmp"></select></label><label>Date<input type="date" id="aDate"></label>
+<label>Time in<input type="time" id="aIn"></label><label>Time out<input type="time" id="aOut"></label>
+<button class="btn" id="aSave">Save record</button><button class="btn g" id="aCancel" style="display:none">Cancel edit</button></div></div>
+<div class="card"><div class="row"><h2 style="margin:0">Records for</h2><label><input type="date" id="lDate"></label></div>
+<div class="wrap"><table><thead><tr><th>Employee</th><th>In</th><th>Out</th><th>Hours</th><th class="noprint">Action</th></tr></thead><tbody id="lBody"></tbody></table></div></div></section>
+
+<section id="t2" class="tab"><div class="card"><h2>Add employee</h2>
+<div class="row"><label>Name<input id="eName" placeholder="Employee name"></label><label>Employee ID<input id="eId" placeholder="e.g. 101"></label><label>Designation<input id="eDes" placeholder="e.g. Technician"></label>
+<button class="btn" id="eAdd">Add employee</button></div></div>
+<div class="card"><h2>All employees</h2><div class="wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Designation</th><th>Action</th></tr></thead><tbody id="eBody"></tbody></table></div></div></section>
+
+<section id="t3" class="tab"><div class="card noprint"><h2>Report</h2>
+<div class="row"><label>Period<select id="rP"><option value="d">Daily</option><option value="w">Weekly</option><option value="m" selected>Monthly</option><option value="y">Yearly</option></select></label>
+<label>Pick a date in period<input type="date" id="rDate"></label><label>Employee<select id="rEmp"></select></label>
+<button class="btn" id="rGo">Show report</button><button class="btn g" id="rPrint">Print</button><button class="btn g" id="rPdf">Download PDF</button><button class="btn ok" id="rXls">Download Excel</button></div></div>
+<div class="card" id="rcard"><h2 id="ptitle">BF Brother and Exide - Attendance Report</h2><div id="rHead" class="sum"></div>
+<div class="wrap"><table><thead><tr><th>Date</th><th>ID</th><th>Name</th><th>In</th><th>Out</th><th>Hours</th><th class="noprint">Action</th></tr></thead><tbody id="rBody"></tbody></table></div><div id="rSum" class="sum"></div></div></section>
+<section id="t4" class="tab stk"><div id="sMsg" class="sum" style="font-weight:600"></div>
+<div class="card"><h2>Profile</h2><label>Name<input id="sName"></label><button class="btn" id="sNameBtn">Save name</button><div class="sum">Email: <b id="sEmail"></b></div></div>
+<div class="card"><h2>Change email</h2><label>New email<input id="sNewEm" type="email"></label><label>Current password<input id="sEmPw" type="password"></label><button class="btn" id="sEmBtn">Change email</button></div>
+<div class="card"><h2>Change password</h2><label>Current password<input id="sOldPw" type="password"></label><label>New password<input id="sNewPw" type="password"></label><button class="btn" id="sPwBtn">Change password</button></div>
+<div class="card"><h2>Appearance</h2><button class="btn g thm">Switch light / dark</button></div>
+<div class="card"><h2>Account</h2><button class="btn g" id="out2">Sign out</button><h2 style="margin-top:22px;color:#ff8a84">Delete account</h2><div class="sum" style="margin-top:0">Account, employees aur saare records hamesha ke liye delete ho jayenge.</div><label>Password<input id="sDelPw" type="password"></label><button class="btn d" id="sDel">Delete my account</button></div></section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+const $=s=>document.querySelector(s),COMPANY="BF Brother and Exide";
+const setTheme=t=>{document.documentElement.dataset.theme=t;try{localStorage.bfTheme=t}catch(e){}};
+setTheme((()=>{try{return localStorage.bfTheme}catch(e){}})()||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"));
+document.querySelectorAll(".thm").forEach(b=>b.onclick=()=>setTheme(document.documentElement.dataset.theme=="dark"?"light":"dark"));
+let emps=[],recs=[],editId=null,rows=[],title="";
+if(FIREBASE_CONFIG.apiKey.startsWith("PASTE")){$("#lErr").textContent="firebase-config.js mein apni Firebase settings paste karein.";throw new Error("config")}
+firebase.initializeApp(FIREBASE_CONFIG);const auth=firebase.auth(),db=firebase.firestore(),fail=e=>alert("Error: "+e.message),col=n=>db.collection("users").doc(auth.currentUser.uid).collection(n);
+const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const mins=(i,o)=>{if(!i||!o)return null;const a=i.split(":"),b=o.split(":");let m=(+b[0]*60+ +b[1])-(+a[0]*60+ +a[1]);return m<0?m+1440:m};
+const fmt=m=>m==null?"-":Math.floor(m/60)+"h "+m%60+"m";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const emp=id=>emps.find(e=>e.uid==id)||{id:"-",name:"(deleted)"};
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button,.tab").forEach(x=>x.classList.remove("on"));b.classList.add("on");$("#"+b.dataset.t).classList.add("on");if(b.dataset.t=="t3")report()});
+function fillSel(){const o=emps.map(e=>`<option value="${e.uid}">${esc(e.name)} (${esc(e.id)})</option>`).join("");$("#aEmp").innerHTML=o||"<option value=''>Add an employee first</option>";$("#rEmp").innerHTML="<option value='all'>All employees</option>"+o}
+function drawEmps(){fillSel();$("#eBody").innerHTML=emps.map(e=>`<tr><td>${esc(e.id)}</td><td>${esc(e.name)}</td><td>${esc(e.des)}</td><td><button class="btn s" onclick="delEmp('${e.uid}')">Delete</button></td></tr>`).join("")||"<tr><td colspan=4>No employees yet. Add one above.</td></tr>"}
+$("#eAdd").onclick=()=>{const n=$("#eName").value.trim(),i=$("#eId").value.trim();if(!n||!i)return alert("Enter name and employee ID.");if(emps.some(e=>e.id==i))return alert("This ID already exists.");col("employees").doc(String(Date.now())).set({id:i,name:n,des:$("#eDes").value.trim()}).catch(fail);["#eName","#eId","#eDes"].forEach(s=>$(s).value="")};
+function delEmp(u){if(!confirm("Delete this employee and all their time records?"))return;const b=db.batch();b.delete(col("employees").doc(u));recs.filter(r=>r.emp==u).forEach(r=>b.delete(col("records").doc(r.id)));b.commit().catch(fail)}
+function resetForm(){editId=null;$("#ftitle").textContent="Add time in / time out";$("#aSave").textContent="Save record";$("#aCancel").style.display="none";$("#aIn").value="";$("#aOut").value=""}
+$("#aCancel").onclick=resetForm;
+$("#aSave").onclick=()=>{const e=$("#aEmp").value,d=$("#aDate").value,i=$("#aIn").value,o=$("#aOut").value;if(!e||!d||!i)return alert("Select employee, date and time in.");
+col("records").doc(editId||String(Date.now())).set({emp:e,date:d,tin:i,tout:o}).catch(fail);resetForm();$("#lDate").value=d;drawList()};
+function editRec(id){const r=recs.find(x=>x.id==id);editId=id;document.querySelector('nav button[data-t=t1]').click();$("#aEmp").value=r.emp;$("#aDate").value=r.date;$("#aIn").value=r.tin;$("#aOut").value=r.tout||"";$("#ftitle").textContent="Edit record";$("#aSave").textContent="Update record";$("#aCancel").style.display="";scrollTo(0,0)}
+function delRec(id){if(!confirm("Delete this record?"))return;col("records").doc(id).delete().catch(fail)}
+const acts=id=>`<button class="btn s g" onclick="editRec('${id}')">Edit</button> <button class="btn s" onclick="delRec('${id}')">Delete</button>`;
+function drawList(){const d=$("#lDate").value;$("#lBody").innerHTML=recs.filter(r=>r.date==d).map(r=>`<tr><td>${esc(emp(r.emp).name)}</td><td>${r.tin}</td><td>${r.tout||"-"}</td><td>${fmt(mins(r.tin,r.tout))}</td><td class="noprint">${acts(r.id)}</td></tr>`).join("")||"<tr><td colspan=5>No records for this date.</td></tr>"}
+$("#lDate").onchange=drawList;
+function range(p,ds){const d=new Date(ds+"T00:00:00"),f=x=>new Date(x-x.getTimezoneOffset()*6e4).toISOString().slice(0,10);let a,b,l;
+if(p=="d"){a=b=ds;l="Daily report: "+ds}else if(p=="w"){const k=(d.getDay()+6)%7,s=new Date(d);s.setDate(d.getDate()-k);const e=new Date(s);e.setDate(s.getDate()+6);a=f(s);b=f(e);l="Weekly report: "+a+" to "+b}
+else if(p=="m"){a=ds.slice(0,8)+"01";b=ds.slice(0,8)+"31";l="Monthly report: "+d.toLocaleString("en",{month:"long",year:"numeric"})}else{a=ds.slice(0,4)+"-01-01";b=ds.slice(0,4)+"-12-31";l="Yearly report: "+ds.slice(0,4)}return{a,b,l}}
+function report(){const r=range($("#rP").value,$("#rDate").value||today()),q=$("#rEmp").value;title=r.l;
+const list=recs.filter(x=>x.date>=r.a&&x.date<=r.b&&(q=="all"||x.emp==q)).sort((x,y)=>x.date.localeCompare(y.date)||x.tin.localeCompare(y.tin));
+rows=list.map(x=>({id:x.id,a:[x.date,emp(x.emp).id,emp(x.emp).name,x.tin,x.tout||"-",fmt(mins(x.tin,x.tout))]}));
+$("#rHead").innerHTML="<b>"+esc(r.l)+"</b>";
+$("#rBody").innerHTML=rows.map(x=>"<tr>"+x.a.map(c=>`<td>${esc(c)}</td>`).join("")+`<td class="noprint">${acts(x.id)}</td></tr>`).join("")||"<tr><td colspan=7>No records found.</td></tr>";
+const t={};list.forEach(x=>{const n=emp(x.emp).name;t[n]=t[n]||{m:0,d:new Set()};t[n].m+=mins(x.tin,x.tout)||0;t[n].d.add(x.date)});
+$("#rSum").innerHTML=Object.keys(t).map(n=>`<div><b>${esc(n)}</b>: ${t[n].d.size} days, total ${fmt(t[n].m)}</div>`).join("")}
+$("#rGo").onclick=report;$("#rPrint").onclick=()=>{report();print()};
+$("#rPdf").onclick=()=>{report();const{jsPDF}=window.jspdf,doc=new jsPDF();doc.setFontSize(16);doc.text(COMPANY+" - Attendance Report",14,16);doc.setFontSize(11);doc.text(title,14,24);
+doc.autoTable({startY:30,head:[["Date","ID","Name","In","Out","Hours"]],body:rows.map(x=>x.a),headStyles:{fillColor:[226,35,26]}});doc.save("attendance-report.pdf")};
+$("#rXls").onclick=()=>{report();const ws=XLSX.utils.aoa_to_sheet([[COMPANY+" - Attendance Report"],[title],[],["Date","ID","Name","In","Out","Hours"],...rows.map(x=>x.a)]);ws["!cols"]=[{wch:12},{wch:8},{wch:22},{wch:8},{wch:8},{wch:10}];const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Report");XLSX.writeFile(wb,"attendance-report.xlsx")};
+$("#aDate").value=$("#lDate").value=$("#rDate").value=today();drawEmps();drawList();
+document.querySelectorAll(".card").forEach(c=>{c.onmousemove=e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform=`rotateX(${-y*3}deg) rotateY(${x*3}deg)`};c.onmouseleave=()=>c.style.transform=""});
+const rep=()=>$("#t3").classList.contains("on");let unsub=[];
+auth.onAuthStateChanged(u=>{$("#login").style.display=u?"none":"flex";showUser();$("#out").style.display=u?"":"none";unsub.forEach(f=>f());unsub=[];
+if(u){unsub.push(col("employees").onSnapshot(q=>{emps=q.docs.map(d=>({...d.data(),uid:d.id}));emps.sort((a,b)=>a.name.localeCompare(b.name));const v=$("#aEmp").value,w=$("#rEmp").value;drawEmps();$("#aEmp").value=v;$("#rEmp").value=w;drawList();if(rep())report()},fail));
+unsub.push(col("records").onSnapshot(q=>{recs=q.docs.map(d=>({...d.data(),id:d.id}));drawList();if(rep())report()},fail))}else{emps=[];recs=[];drawEmps();drawList()}});
+let mode="in";const S=$("#sMsg");
+function setMode(m){mode=m;$("#gN").style.display=m=="up"?"":"none";$("#gP").style.display=m=="fg"?"none":"";$("#lgo").textContent={in:"Login",up:"Create account",fg:"Send reset link"}[m];$("#lErr").textContent=""}
+document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+const msg=(el,t,ok)=>{el.style.color=ok?"var(--ok)":"#ff8a84";el.textContent=t};
+const errTxt=e=>({"auth/invalid-credential":"Email ya password galat hai.","auth/wrong-password":"Password galat hai.","auth/email-already-in-use":"Yeh email pehle se registered hai.","auth/weak-password":"Password kam az kam 6 characters ka rakhein.","auth/invalid-email":"Email sahi nahi hai.","auth/missing-password":"Password likhein.","auth/too-many-requests":"Bohat attempts. Thori der baad try karein.","auth/requires-recent-login":"Dobara login karke try karein."}[e.code]||e.message);
+function showUser(){const u=auth.currentUser;$("#uName").textContent=u?(u.displayName||u.email):"";if(u){$("#sName").value=u.displayName||"";$("#sEmail").textContent=u.email}}
+function doLogin(){const em=$("#lEm").value.trim(),pw=$("#lPw").value,E=$("#lErr");
+if(mode=="fg")return auth.sendPasswordResetEmail(em).then(()=>msg(E,"Reset link aapki email par bhej diya gaya hai (spam folder bhi dekhein).",1)).catch(e=>msg(E,errTxt(e)));
+if(mode=="up"){const n=$("#lNm").value.trim();if(!n)return msg(E,"Apna naam likhein.");return auth.createUserWithEmailAndPassword(em,pw).then(c=>c.user.updateProfile({displayName:n})).then(showUser).catch(e=>msg(E,errTxt(e)))}
+auth.signInWithEmailAndPassword(em,pw).catch(e=>msg(E,errTxt(e)))}
+const reauth=pw=>{const u=auth.currentUser;return u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email,pw))};
+$("#sNameBtn").onclick=()=>auth.currentUser.updateProfile({displayName:$("#sName").value.trim()}).then(()=>{showUser();msg(S,"Name save ho gaya.",1)}).catch(e=>msg(S,errTxt(e)));
+$("#sEmBtn").onclick=()=>reauth($("#sEmPw").value).then(()=>auth.currentUser.verifyBeforeUpdateEmail($("#sNewEm").value.trim())).then(()=>msg(S,"Naye email par verification link bheja gaya. Us par click karne se email badal jayega.",1)).catch(e=>msg(S,errTxt(e)));
+$("#sPwBtn").onclick=()=>reauth($("#sOldPw").value).then(()=>auth.currentUser.updatePassword($("#sNewPw").value)).then(()=>{msg(S,"Password badal gaya.",1);$("#sOldPw").value=$("#sNewPw").value=""}).catch(e=>msg(S,errTxt(e)));
+$("#sDel").onclick=async()=>{if(!confirm("Account aur saara data hamesha ke liye delete ho jayega. Pakka?"))return;try{await reauth($("#sDelPw").value);const u=auth.currentUser;
+for(const n of["records","employees"]){const q=await col(n).get();for(let i=0;i<q.docs.length;i+=400){const b=db.batch();q.docs.slice(i,i+400).forEach(d=>b.delete(d.ref));await b.commit()}}await u.delete()}catch(e){msg(S,errTxt(e))}};
+$("#out2").onclick=()=>auth.signOut();setMode("in");
+$("#lgo").onclick=doLogin;$("#lPw").onkeydown=e=>{if(e.key=="Enter")doLogin()};$("#out").onclick=()=>auth.signOut();
+// 3D battery
+if(window.THREE){const cv=$("#bat"),R=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true}),S=new THREE.Scene(),C=new THREE.PerspectiveCamera(40,400/240,.1,50);C.position.set(0,1,6);C.lookAt(0,0,0);
+S.add(new THREE.AmbientLight(0xffffff,.6));const L=new THREE.DirectionalLight(0xffffff,.9);L.position.set(3,4,5);S.add(L);
+const g=new THREE.Group(),M=(c)=>new THREE.MeshStandardMaterial({color:c,metalness:.4,roughness:.4});
+g.add(new THREE.Mesh(new THREE.BoxGeometry(3,1.6,1.4),M(0x1a1a1a)));const st=new THREE.Mesh(new THREE.BoxGeometry(3.02,.5,1.42),M(0xe2231a));st.position.y=.1;g.add(st);
+[-1,1].forEach(x=>{const t=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,.3,20),M(0xcfd6df));t.position.set(x*.9,.95,0);g.add(t)});S.add(g);
+(function a(){g.rotation.y+=.012;g.rotation.x=.25+Math.sin(Date.now()/900)*.08;R.render(S,C);requestAnimationFrame(a)})()}
+</script></body></html>
